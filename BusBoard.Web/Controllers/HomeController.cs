@@ -1,24 +1,49 @@
 using Microsoft.AspNetCore.Mvc;
 using BusBoard.Web.Models;
 using BusBoard.Web.ViewModels;
+using BusBoard.Api.Services;
 
 namespace BusBoard.Web.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly ITflApiService _tflApiService;
+
+    public HomeController(ITflApiService tflApiService)
+    {
+        _tflApiService = tflApiService;
+    }
+
     public IActionResult Index()
     {
         return View();
     }
 
     [HttpGet]
-    public IActionResult BusInfo(PostcodeSelection selection)
+    public async Task<IActionResult> BusInfo(PostcodeSelection selection)
     {
-        // Add some properties to the BusInfo view model with the data you want to render on the page.
-        // Write code here to populate the view model with info from the APIs.
-        // Then modify the view (in Views/Home/BusInfo.cshtml) to render upcoming buses.
-        var info = new BusInfo(selection.Postcode ?? string.Empty);
-        return View(info);
+        if (string.IsNullOrWhiteSpace(selection.Postcode))
+        {
+            var emptyInfo = new BusInfo(string.Empty);
+            return View(emptyInfo);
+        }
+
+        try
+        {
+            var busStops = await _tflApiService.GetBusStopsNearPostcodeAsync(selection.Postcode);
+            var info = new BusInfo(selection.Postcode)
+            {
+                BusStops = busStops
+            };
+            return View(info);
+        }
+        catch (Exception ex)
+        {
+            // Log error in production
+            ViewBag.Error = "Unable to fetch bus information at this time. Please try again later.";
+            var errorInfo = new BusInfo(selection.Postcode);
+            return View(errorInfo);
+        }
     }
 
     public IActionResult About()

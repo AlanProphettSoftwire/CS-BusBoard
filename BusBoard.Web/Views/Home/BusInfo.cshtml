@@ -1,10 +1,83 @@
-﻿@model BusBoard.Web.ViewModels.BusInfo
+@model BusBoard.Web.ViewModels.BusInfo
 @{
-  ViewBag.Title = "Bus Information";
+    ViewBag.Title = "Bus Information";
 }
 
-<h2>BusInfo</h2>
+<h2>Bus Information for @Model.PostCode</h2>
 
-<div class="row">
-    <p>You entered postcode @Model.PostCode</p>
-</div>
+@if (!string.IsNullOrEmpty(ViewBag.Error))
+{
+    <div class="alert alert-danger">
+        @ViewBag.Error
+    </div>
+}
+
+@if (Model.BusStops.Any())
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Nearby Bus Stops</h3>
+            @foreach (var busStop in Model.BusStops)
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4>@busStop.StopName</h4>
+                        <small>Distance: @Math.Round(busStop.Distance, 0)m</small>
+                    </div>
+                    <div class="panel-body">
+                        @if (busStop.Departures.Any())
+                        {
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Route</th>
+                                        <th>Destination</th>
+                                        <th>Minutes</th>
+                                        <th>Expected</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var departure in busStop.Departures)
+                                    {
+                                        <tr>
+                                            <td><span class="label label-primary">@departure.Route</span></td>
+                                            <td>@departure.Destination</td>
+                                            <td>
+                                                @if (departure.MinutesToArrival <= 1)
+                                                {
+                                                    <span class="text-success"><strong>Due</strong></span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@departure.MinutesToArrival min</span>
+                                                }
+                                            </td>
+                                            <td>@departure.ExpectedArrival.ToString("HH:mm")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No upcoming departures</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else if (!string.IsNullOrEmpty(Model.PostCode))
+{
+    <div class="alert alert-info">
+        <p>No bus stops found near postcode <strong>@Model.PostCode</strong>.</p>
+        <p>Please try a different postcode or check if it's a valid London postcode.</p>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        <p>Please enter a postcode to see bus information.</p>
+    </div>
+}
