@@ -1,13 +1,11 @@
-﻿namespace BusBoard.Web.ViewModels
+namespace BusBoard.Web.ViewModels;
+
+public class BusInfo
 {
-  public class BusInfo
-  {
     public BusInfo(string postCode)
     {
-      PostCode = postCode;
+        PostCode = postCode;
     }
 
-    public string PostCode { get; set; }
-
-  }
+    public string PostCode { get; set; } = string.Empty;
 }
