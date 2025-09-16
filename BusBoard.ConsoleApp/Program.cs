@@ -1,12 +1,12 @@
 using System.Net;
 using BusBoard.ConsoleApp.TflApiService;
 using BusBoard.ConsoleApp.TflModels;
+using Microsoft.Extensions.Configuration;
 
 public class Program
 {
 	private static void LoadMenu()
 	{
-		Console.Clear();
 		Console.WriteLine("## Welcome To Bus Board ##");
 	}
 
@@ -34,7 +34,12 @@ public class Program
 	{
 		ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 		
-		Actions tflActions = new Actions();
+		var config = new ConfigurationBuilder()
+			.AddJsonFile("appsettings.json", optional: true)
+			.AddEnvironmentVariables()
+			.Build();
+		
+		Actions tflActions = new Actions(config);
 		LoadMenu();
 
 		var userInputStopId = RequestUserForStopID();

@@ -1,5 +1,7 @@
 ﻿using RestSharp;
 using RestSharp.Serializers.Json;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 
 namespace BusBoard.ConsoleApp.TflApiService;
 
@@ -7,14 +9,14 @@ public class TflApiClient
 {
     private readonly RestClient _client;
     
-    public TflApiClient()
+    public TflApiClient(IConfiguration secretConfiguration)
     {
         RestClientOptions options = new RestClientOptions("https://api.tfl.gov.uk/");
         _client = new RestClient(
             options,
             configureSerialization: s => s.UseSystemTextJson());
-        // TODO: Add api secret - this will run when no secret set with high rate limiting 
-        _client.AddDefaultParameter("app_id", "");
+        
+        _client.AddDefaultParameter("app_id",secretConfiguration["TflApi.AppKey"]);
     }
     
     public T GetApiResponse<T>(string resource)
