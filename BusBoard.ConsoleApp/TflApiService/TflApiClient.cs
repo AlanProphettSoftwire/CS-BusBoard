@@ -1,13 +1,13 @@
 ﻿using RestSharp;
 using RestSharp.Serializers.Json;
 
-namespace BusBoard.ConsoleApp;
+namespace BusBoard.ConsoleApp.TflApiService;
 
-public class TflApiService
+public class TflApiClient
 {
     private readonly RestClient _client;
     
-    public TflApiService()
+    public TflApiClient()
     {
         RestClientOptions options = new RestClientOptions("https://api.tfl.gov.uk/");
         _client = new RestClient(
@@ -28,8 +28,6 @@ public class TflApiService
                                 $"status code: '{response.StatusCode}' on TFL API request: '{resource}'"); 
         }
         
-        // Console.WriteLine(response.Content);
-
         if (response.Data == null)
         {
             throw new Exception($"Something went wrong. on TFL API request: '{resource}'" +

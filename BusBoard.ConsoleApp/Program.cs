@@ -1,18 +1,45 @@
 using System.Net;
-using BusBoard.ConsoleApp;
+using BusBoard.ConsoleApp.TflApiService;
 using BusBoard.ConsoleApp.TflModels;
+
 public class Program
 {
 	private static void LoadMenu()
 	{
 		Console.Clear();
-		Console.WriteLine("🚌 Welcome To Bus Board");
+		Console.WriteLine("## Welcome To Bus Board ##");
 	}
+
+	public static string RequestUserForStopID()
+	{
+		string userInput = "";
+		do
+		{
+			Console.WriteLine("Enter the bus stop id: ");
+			userInput = Console.ReadLine();
+		} while (userInput is null || userInput.Trim().Length == 0);
+
+		return userInput;
+	}
+
+	public static void DisplayBusPredictions(List<Prediction> predictions)
+	{
+		foreach (var prediction in predictions)
+		{
+			Console.WriteLine($"Route: {prediction.LineName} | Destination: {prediction.DestinationName} | ETA: {prediction.TimeToStation}s");
+		}
+	}
+
 	public static void Main(string[] args)
 	{
 		ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+		
+		Actions tflActions = new Actions();
 		LoadMenu();
-		TflApiService tflApiClient = new TflApiService();
-		var predictions = tflApiClient.GetApiResponse<List<Prediction>>("StopPoint/490005911W/Arrivals");
+
+		var userInputStopId = RequestUserForStopID();
+		var prediction = tflActions.GetUpToNextFiveBusPredictionsAtStop(userInputStopId);
+		DisplayBusPredictions(prediction);
+
 	}
 }
