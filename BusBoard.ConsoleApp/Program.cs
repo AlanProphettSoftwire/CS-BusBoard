@@ -1,6 +1,7 @@
 using System.Net;
 using BusBoard.ConsoleApp;
 using BusBoard.ConsoleApp.TflModels;
+
 public class Program
 {
 	private static void LoadMenu()
