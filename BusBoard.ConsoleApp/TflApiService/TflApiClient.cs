@@ -14,6 +14,13 @@ public class TflApiClient
         _client = new RestClient(
             options,
             configureSerialization: s => s.UseSystemTextJson());
+
+        string tflSecretKey = secretConfiguration["tflApi:key"];
+        if (string.IsNullOrWhiteSpace(tflSecretKey))
+        {
+            throw new Exception("Tfl API key not configured");
+        }
+            
         
         _client.AddDefaultParameter("app_key",secretConfiguration["tflApi:key"]);
     }
