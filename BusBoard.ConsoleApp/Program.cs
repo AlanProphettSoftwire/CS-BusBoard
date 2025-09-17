@@ -17,7 +17,7 @@ public class Program
 		{
 			Console.WriteLine("Enter the bus stop id: ");
 			userInput = Console.ReadLine();
-		} while (userInput is null || userInput.Trim().Length == 0);
+		} while (string.IsNullOrWhiteSpace(userInput));
 
 		return userInput;
 	}
