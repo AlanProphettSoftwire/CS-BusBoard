@@ -20,7 +20,6 @@ public class TflApiClient
         {
             throw new Exception("Tfl API key not configured");
         }
-            
         
         _client.AddDefaultParameter("app_key",secretConfiguration["tflApi:key"]);
     }
