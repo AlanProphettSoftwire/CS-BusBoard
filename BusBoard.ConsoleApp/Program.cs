@@ -33,9 +33,9 @@ public class Program
 	public static void Main(string[] args)
 	{
 		ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-		
+
 		var config = new ConfigurationBuilder()
-			.AddJsonFile("appsettings.json", optional: true)
+			.AddUserSecrets<Program>()
 			.AddEnvironmentVariables()
 			.Build();
 		

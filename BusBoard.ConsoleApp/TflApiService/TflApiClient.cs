@@ -1,6 +1,5 @@
 ﻿using RestSharp;
 using RestSharp.Serializers.Json;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 
 namespace BusBoard.ConsoleApp.TflApiService;
@@ -16,7 +15,7 @@ public class TflApiClient
             options,
             configureSerialization: s => s.UseSystemTextJson());
         
-        _client.AddDefaultParameter("app_id",secretConfiguration["TflApi.AppKey"]);
+        _client.AddDefaultParameter("app_key",secretConfiguration["tflApi:key"]);
     }
     
     public T GetApiResponse<T>(string resource)
