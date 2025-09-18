@@ -28,22 +28,19 @@ public class TflApiClient
         
         _client.AddDefaultParameter("app_key", tflSecretKey);
     }
-
-    public T GetApiResponse<T>(string resource)
-    {
-        return this.GetApiResponse<T>(resource, []);
-    }
-
     
-    public T GetApiResponse<T>(string resource, List<Tuple<string, string>> queryOptions)
+    public T GetApiResponse<T>(string resource, Dictionary<string, string> queryOptions = null )
     {
         var request = new RestRequest(resource);
-        
-        foreach (var queryOption in queryOptions)
+
+        if(queryOptions != null)
         {
-            request.AddParameter(queryOption.Item1, queryOption.Item2);
+            foreach (var queryKey in queryOptions.Keys)
+            {
+                request.AddParameter(queryKey, queryOptions[queryKey]);
+            }
         }
-        
+
         var response = _client.Execute<T>(request);
 
         if (response.StatusCode != System.Net.HttpStatusCode.OK)

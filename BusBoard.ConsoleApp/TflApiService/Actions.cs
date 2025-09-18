@@ -20,11 +20,11 @@ public class Actions
     
     public List<StopPoint> GetStopsInRadiusOfLocation(double latitude, double longitude, int radius = 200, bool orderByDistance = true)
     {
-        List<Tuple<string, string>> queryOptions = new List<Tuple<string, string>>();
-        queryOptions.Add(new Tuple<string, string>("stopTypes", "NaptanPublicBusCoachTram"));
-        queryOptions.Add(new Tuple<string, string>("lat", latitude.ToString()));
-        queryOptions.Add(new Tuple<string, string>("lon", longitude.ToString()));
-        queryOptions.Add(new Tuple<string, string>("radius", radius.ToString()));
+        Dictionary<string, string> queryOptions = new Dictionary<string, string>();
+        queryOptions.Add("stopTypes", "NaptanPublicBusCoachTram");
+        queryOptions.Add("lat", latitude.ToString());
+        queryOptions.Add("lon", longitude.ToString());
+        queryOptions.Add("radius", radius.ToString());
 
         var predictions = _tflApiClient.GetApiResponse<StopPointsResponse>($"StopPoint", queryOptions);
 
