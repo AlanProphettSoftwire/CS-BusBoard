@@ -1,6 +1,8 @@
 using System.Net;
-using BusBoard.ConsoleApp;
+using BusBoard.ConsoleApp.PostcodeApiService;
+using BusBoard.ConsoleApp.TflApiService;
 using BusBoard.ConsoleApp.TflModels;
+using Microsoft.Extensions.Configuration;
 
 public class Program
 {
@@ -14,7 +16,19 @@ public class Program
 		string userInput = "";
 		do
 		{
-			Console.WriteLine("Enter the bus stop id: ");
+			Console.WriteLine("Enter the bus stop id:\n");
+			userInput = Console.ReadLine();
+		} while (string.IsNullOrWhiteSpace(userInput));
+
+		return userInput;
+	}
+	
+	public static string RequestUserForPostcode()
+	{
+		string userInput = "";
+		do
+		{
+			Console.WriteLine("Enter your postcode:\n");
 			userInput = Console.ReadLine();
 		} while (string.IsNullOrWhiteSpace(userInput));
 
@@ -25,11 +39,11 @@ public class Program
 	{
 		foreach (var prediction in predictions)
 		{
-			Console.WriteLine($"Route: {prediction.LineName} | Destination: {prediction.DestinationName} | ETA: {prediction.TimeToStation}s");
+			Console.WriteLine($"\tRoute: {prediction.LineName} | Destination: {prediction.DestinationName} | ETA: {prediction.TimeToStation}s");
 		}
 	}
 
-	public static void Main(string[] args)
+	public static void LoadUiForViewingNextFiveUpcomingBusesAtBusStop()
 	{
 		ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
@@ -40,10 +54,31 @@ public class Program
 		
 		Actions tflActions = new Actions(config);
 		LoadMenu();
-
+		Actions tflActions = new Actions();
 		var userInputStopId = RequestUserForStopID();
 		var prediction = tflActions.GetUpToNextFiveBusPredictionsAtStop(userInputStopId);
 		DisplayBusPredictions(prediction);
+	}
 
+	public static void LoadUiForViewingNearbyBusStops()
+	{
+		LoadMenu();
+		Actions tflActions = new Actions();
+		PostcodeApiClient postcodeApiClientInstance = new PostcodeApiClient();
+		var userInputPostcode = RequestUserForPostcode();
+		PostcodeResponseModel postcodeApiResponse = postcodeApiClientInstance.GetLonLatFromPostcode(userInputPostcode);
+		List<StopPoint> nearbyStops = tflActions.GetStopsInRadiusOfLocation(postcodeApiResponse.Result.Latitude, postcodeApiResponse.Result.Longitude);
+		Console.WriteLine($"{nearbyStops.Count} stops nearby.");
+		foreach (var stop in nearbyStops)
+		{
+			Console.WriteLine($"{stop.CommonName} - {stop.Indicator} ({(int)stop.Distance} meters away)");
+			var prediction = tflActions.GetUpToNextFiveBusPredictionsAtStop(stop.NaptanId);
+			DisplayBusPredictions(prediction);
+		}
+   	}
+	public static void Main(string[] args)
+	{
+		ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+		LoadUiForViewingNearbyBusStops();
 	}
 }
