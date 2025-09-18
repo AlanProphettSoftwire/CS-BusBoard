@@ -11,7 +11,7 @@ public class Program
 		Console.WriteLine("## Welcome To Bus Board ##");
 	}
 
-	public static string NormaliseUserPostcode(string? postcode)
+	private static string NormaliseUserPostcode(string? postcode)
 	{
 		if (string.IsNullOrWhiteSpace(postcode))
 		{
@@ -20,9 +20,9 @@ public class Program
 		return Regex.Replace(postcode, @"\s+", "");
 	}
 	
-	public static string RequestUserForPostcode()
+	private static string RequestUserForPostcode()
 	{
-		string userInput = "";
+		string? userInput = null;
 		do
 		{
 			Console.WriteLine("Enter your postcode:\n");
@@ -33,7 +33,7 @@ public class Program
 		return userInput;
 	}
 
-	public static void DisplayBusPredictions(List<Prediction> predictions)
+	private static void DisplayBusPredictions(List<Prediction> predictions)
 	{
 		foreach (var prediction in predictions)
 		{
@@ -41,7 +41,7 @@ public class Program
 		}
 	}
 	
-	public static void LoadUiForViewingNearbyBusStops()
+	private static void LoadUiForViewingNearbyBusStops()
 	{
 		LoadMenu();
 		Actions tflActions = new Actions();
