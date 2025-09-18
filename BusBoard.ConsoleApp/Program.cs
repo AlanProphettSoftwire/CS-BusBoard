@@ -22,6 +22,15 @@ public class Program
 
 		return userInput;
 	}
+
+	public static string NormaliseUserPostcode(string? postcode)
+	{
+		if (string.IsNullOrWhiteSpace(postcode))
+		{
+			return "";
+		}
+		return postcode.Replace(" ", "").Trim();
+	}
 	
 	public static string RequestUserForPostcode()
 	{
@@ -30,6 +39,7 @@ public class Program
 		{
 			Console.WriteLine("Enter your postcode:\n");
 			userInput = Console.ReadLine();
+			userInput = NormaliseUserPostcode(userInput);
 		} while (string.IsNullOrWhiteSpace(userInput));
 
 		return userInput;
