@@ -2,6 +2,7 @@ using System.Net;
 using BusBoard.ConsoleApp.PostcodeApiService;
 using BusBoard.ConsoleApp.TflApiService;
 using BusBoard.ConsoleApp.TflModels;
+using System.Text.RegularExpressions;
 
 public class Program
 {
@@ -10,25 +11,13 @@ public class Program
 		Console.WriteLine("## Welcome To Bus Board ##");
 	}
 
-	public static string RequestUserForStopID()
-	{
-		string userInput = "";
-		do
-		{
-			Console.WriteLine("Enter the bus stop id:\n");
-			userInput = Console.ReadLine();
-		} while (string.IsNullOrWhiteSpace(userInput));
-
-		return userInput;
-	}
-
 	public static string NormaliseUserPostcode(string? postcode)
 	{
 		if (string.IsNullOrWhiteSpace(postcode))
 		{
 			return "";
 		}
-		return postcode.Replace(" ", "").Trim();
+		return Regex.Replace(postcode, @"\s+", "");
 	}
 	
 	public static string RequestUserForPostcode()
@@ -51,16 +40,7 @@ public class Program
 			Console.WriteLine($"\tRoute: {prediction.LineName} | Destination: {prediction.DestinationName} | ETA: {prediction.TimeToStation}s");
 		}
 	}
-
-	public static void LoadUiForViewingNextFiveUpcomingBusesAtBusStop()
-	{
-		LoadMenu();
-		Actions tflActions = new Actions();
-		var userInputStopId = RequestUserForStopID();
-		var prediction = tflActions.GetUpToNextFiveBusPredictionsAtStop(userInputStopId);
-		DisplayBusPredictions(prediction);
-	}
-
+	
 	public static void LoadUiForViewingNearbyBusStops()
 	{
 		LoadMenu();
@@ -70,7 +50,8 @@ public class Program
 		PostcodeResponseModel postcodeApiResponse = postcodeApiClientInstance.GetLonLatFromPostcode(userInputPostcode);
 		List<StopPoint> nearbyStops = tflActions.GetStopsInRadiusOfLocation(postcodeApiResponse.Result.Latitude, postcodeApiResponse.Result.Longitude);
 		Console.WriteLine($"{nearbyStops.Count} stops nearby.");
-		foreach (var stop in nearbyStops)
+		List<StopPoint> twoNearestStops = nearbyStops.Take(2).ToList();
+		foreach (var stop in twoNearestStops)
 		{
 			Console.WriteLine($"{stop.CommonName} - {stop.Indicator} ({(int)stop.Distance} meters away)");
 			var prediction = tflActions.GetUpToNextFiveBusPredictionsAtStop(stop.NaptanId);
