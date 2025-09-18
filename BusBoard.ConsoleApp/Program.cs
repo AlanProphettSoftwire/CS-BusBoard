@@ -55,14 +55,6 @@ public class Program
 
 	public static void LoadUiForViewingNextFiveUpcomingBusesAtBusStop()
 	{
-		ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-		var config = new ConfigurationBuilder()
-			.AddUserSecrets<Program>()
-			.AddEnvironmentVariables()
-			.Build();
-		
-		Actions tflActions = new Actions(config);
 		LoadMenu();
 		Actions tflActions = new Actions();
 		var userInputStopId = RequestUserForStopID();
