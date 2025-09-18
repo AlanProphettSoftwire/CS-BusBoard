@@ -8,25 +8,39 @@ public class TflApiClient
 {
     private readonly RestClient _client;
     
-    public TflApiClient(IConfiguration secretConfiguration)
+    public TflApiClient()
     {
+        var config = new ConfigurationBuilder()
+            .AddUserSecrets<Program>()
+            .AddEnvironmentVariables()
+            .Build();
+        
         RestClientOptions options = new RestClientOptions("https://api.tfl.gov.uk/");
         _client = new RestClient(
             options,
             configureSerialization: s => s.UseSystemTextJson());
 
-        string tflSecretKey = secretConfiguration["tflApi:key"];
+        string tflSecretKey = config["tflApi:key"];
         if (string.IsNullOrWhiteSpace(tflSecretKey))
         {
             throw new Exception("Tfl API key not configured");
         }
         
-        _client.AddDefaultParameter("app_key",secretConfiguration["tflApi:key"]);
+        _client.AddDefaultParameter("app_key", tflSecretKey);
     }
     
-    public T GetApiResponse<T>(string resource)
+    public T GetApiResponse<T>(string resource, Dictionary<string, string> queryOptions = null )
     {
         var request = new RestRequest(resource);
+
+        if(queryOptions != null)
+        {
+            foreach (var queryKey in queryOptions.Keys)
+            {
+                request.AddParameter(queryKey, queryOptions[queryKey]);
+            }
+        }
+
         var response = _client.Execute<T>(request);
 
         if (response.StatusCode != System.Net.HttpStatusCode.OK)
