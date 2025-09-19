@@ -1,20 +1,30 @@
 ﻿@model BusBoard.Web.ViewModels.StopInfo
 @{
-  ViewBag.Title = "Stop Information";
+    ViewBag.Title = "Stop Information";
 }
 
 <h2>Stop Information</h2>
-<div>
-    <p><strong>Stop ID:</strong> @Model.StopPointDetails?.NaptanId</p>
-    <p><strong>Name:</strong> @Model.StopPointDetails?.CommonName</p>
-    <p><strong>Location:</strong> @Model.StopPointDetails?.Lon, @Model.StopPointDetails?.Lat</p>
-</div>
+
+@if (Model.StopPointDetails == null)
+{
+    <p>Bus stop not found 😔</p>
+}
+else
+{
+    <div>
+        <p><strong>Stop ID:</strong> @Model.StopPointDetails?.NaptanId</p>
+        <p><strong>Name:</strong> @Model.StopPointDetails?.CommonName</p>
+        <p><strong>Location:</strong> @Model.StopPointDetails?.Lon, @Model.StopPointDetails?.Lat</p>
+        <div id="map" style="height:400px; width:100%; margin-top:20px;"></div>
+
+    </div>
+}
 
 
-<h3>Upcoming Buses</h3>
 
 @if (Model.Predictions?.Any() ?? false)
 {
+    <h3>Upcoming Buses</h3>
     <table class="table">
         <thead>
         <tr>
@@ -40,3 +50,19 @@ else
     <p>No upcoming buses at this stop.</p>
 }
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var lat = @Model.StopPointDetails?.Lat ?? 0;
+        var lon = @Model.StopPointDetails?.Lon ?? 0;
+
+        var map = L.map('map').setView([lat, lon], 20);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        L.marker([lat, lon]).addTo(map)
+            .bindPopup("🚏 @Model.StopPointDetails?.CommonName - @Model.StopPointDetails?.Indicator")
+            .openPopup();
+    });
+</script>
