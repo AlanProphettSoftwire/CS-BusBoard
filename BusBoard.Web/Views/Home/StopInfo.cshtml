@@ -5,6 +5,11 @@
 
 <h2>Stop Information</h2>
 
+<button type="button" class="btn btn-secondary" aria-label="Go back"
+        onclick="if (history.length > 1) { history.back(); } else { window.location.href='@Url.Action("Index", "Home")'; }">
+    ← Back
+</button>
+
 @if (Model.StopPointDetails == null)
 {
     <p>Bus stop not found 😔</p>
@@ -49,6 +54,13 @@ else
 {
     <p>No upcoming buses at this stop.</p>
 }
+
+<style>
+    .leaflet-popup-content {
+        font-size: 18px;
+        font-weight: bold;
+    }
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
