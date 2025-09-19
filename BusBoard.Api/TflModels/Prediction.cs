@@ -1,4 +1,4 @@
-﻿namespace BusBoard.ConsoleApp.TflModels;
+﻿namespace BusBoard.Api.TflModels;
 using System.Text.Json.Serialization;
 public class Prediction
 {

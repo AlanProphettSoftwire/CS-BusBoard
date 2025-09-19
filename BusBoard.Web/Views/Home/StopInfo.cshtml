@@ -1,0 +1,42 @@
+﻿@model BusBoard.Web.ViewModels.StopInfo
+@{
+  ViewBag.Title = "Stop Information";
+}
+
+<h2>Stop Information</h2>
+<div>
+    <p><strong>Stop ID:</strong> @Model.StopPointDetails?.NaptanId</p>
+    <p><strong>Name:</strong> @Model.StopPointDetails?.CommonName</p>
+    <p><strong>Location:</strong> @Model.StopPointDetails?.Lon, @Model.StopPointDetails?.Lat</p>
+</div>
+
+
+<h3>Upcoming Buses</h3>
+
+@if (Model.Predictions?.Any() ?? false)
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Line</th>
+            <th>Destination</th>
+            <th>Time To Station (mins)</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var prediction in Model.Predictions)
+        {
+            <tr>
+                <td>@prediction.LineName</td>
+                <td>@prediction.DestinationName</td>
+                <td>@(prediction.TimeToStation / 60)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No upcoming buses at this stop.</p>
+}
+

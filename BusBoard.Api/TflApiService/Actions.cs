@@ -1,6 +1,5 @@
-﻿namespace BusBoard.ConsoleApp.TflApiService;
-using BusBoard.ConsoleApp.TflModels;
-using Microsoft.Extensions.Configuration;
+﻿namespace BusBoard.Api.TflApiService;
+using BusBoard.Api.TflModels;
 
 
 public class Actions
@@ -37,5 +36,11 @@ public class Actions
         }
         
         return predictions.StopPoints;
+    }
+
+    public StopPoint? GetStopPoint(string stopId)
+    {
+        var stopPoint = _tflApiClient.GetApiResponse<StopPoint>($"StopPoint/{stopId}");
+        return stopPoint;
     }
 }
