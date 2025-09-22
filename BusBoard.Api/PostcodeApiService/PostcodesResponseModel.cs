@@ -1,4 +1,4 @@
-﻿namespace BusBoard.ConsoleApp.PostcodeApiService;
+﻿namespace BusBoard.Api.PostcodeApiService;
 
 using System.Text.Json.Serialization;
 

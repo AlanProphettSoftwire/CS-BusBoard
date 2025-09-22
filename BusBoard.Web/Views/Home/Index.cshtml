@@ -1,0 +1,110 @@
+﻿@model BusBoard.Web.ViewModels.MapDetails
+
+@{
+    ViewBag.Title = "BusBoard Map";
+}
+
+<div id="map" style="height:100vh; width:100vw; position: fixed; top:50px; left:0;"></div>
+
+<!-- Search bar container -->
+<div class="search-container">
+    @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+    {
+        <div class="d-flex">
+            @Html.TextBoxFor(m => m.PostCode, new { @class = "flex-grow-1 form-control inline-form-control", placeholder = "Enter postcode..." })
+            <button type="submit" class="btn btn-primary ms-2 flex-shrink-0">
+                🔍 Find Nearby Stops
+            </button>
+            @if(!string.IsNullOrWhiteSpace(@Model.Message)){<text><p class="text-center" style="tex"><br/>@Model.Message</p></text>}
+        </div>
+    }
+</div>
+
+<style>
+    .search-container {
+        position: absolute;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        padding: 10px;
+        max-width: 500px;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .search-container:hover {
+        transform: translateX(-50%) scale(1.05); /* Slight zoom */
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3); /* Deeper shadow */
+        background: rgba(255, 255, 255, 1); /* Make it a bit brighter */
+    }
+
+    .inline-form-control {
+        display: inline-block;
+        width: auto;
+    }
+
+    .leaflet-popup-content {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        @if (string.IsNullOrWhiteSpace(@Model.PostCode) || !string.IsNullOrWhiteSpace(@Model.Message))
+        {
+            <text>
+                var map = L.map('map').setView([@Model.Latitude, @Model.Longitude], 13);
+
+                L.marker([@Model.Latitude, @Model.Longitude], {icon: L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/829276.png',
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 30]
+                })})
+                .addTo(map)
+                    .bindPopup("📍 🚌🏙️ Welcome To BusBoard<hr/>Enter your postcode above to find stops near you!")
+                    .openPopup()
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+            </text>
+        }
+        else
+        {
+            <text>
+                var map = L.map('map').setView([@Model.Latitude, @Model.Longitude], 17);
+                L.marker([@Model.Latitude, @Model.Longitude], {icon: L.icon({
+                        iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/829276.png',
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 30]
+                    })})
+                    .addTo(map)
+                    .bindPopup("📍 @Model.PostCode")
+                    .openPopup();
+
+                @foreach (var stop in Model.NearbyStopPoints)
+                {
+                    <text>
+                        L.marker([@stop.Lat, @stop.Lon])
+                                .addTo(map)
+                                .bindPopup(
+                                    `<div>
+                                        🚏 @stop.CommonName - @stop.Indicator <br>
+                                        <a href="/Home/StopInfo?stopId=@stop.NaptanId">More details</a>
+                                    </div>`
+                                    );
+                    </text>
+                }
+        
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+            </text>
+        }
+    });
+</script>

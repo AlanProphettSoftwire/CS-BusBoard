@@ -1,7 +1,7 @@
 using System.Net;
-using BusBoard.ConsoleApp.PostcodeApiService;
-using BusBoard.ConsoleApp.TflApiService;
-using BusBoard.ConsoleApp.TflModels;
+using BusBoard.Api.PostcodeApiService;
+using BusBoard.Api.TflApiService;
+using BusBoard.Api.TflModels;
 using System.Text.RegularExpressions;
 
 public class Program

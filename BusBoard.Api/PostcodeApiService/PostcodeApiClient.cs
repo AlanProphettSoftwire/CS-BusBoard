@@ -1,9 +1,8 @@
-﻿using BusBoard.ConsoleApp.TflModels;
-using Microsoft.Extensions.Configuration;
+﻿using BusBoard.Api.TflModels;
 using RestSharp;
 using RestSharp.Serializers.Json;
 
-namespace BusBoard.ConsoleApp.PostcodeApiService;
+namespace BusBoard.Api.PostcodeApiService;
 
 public class PostcodeApiClient
 {
